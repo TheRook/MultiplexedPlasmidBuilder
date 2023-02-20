@@ -1,14 +1,14 @@
 ## Modify Plasmid GenBank File Script
-This is a Python script that modifies a GenBank file of a plasmid backbone by replacing specified target genes with new sequences. The script can be run from the command line using the typer package.
+This project simplifies the process of building multiplexed-plasmids and packaging them up into a single annoated genbank file that can be easily used on benchling or another workbench.  Although this task is commonly perfomred by hand in a browser or desktop application, performing senstive tasks like this with python allows us to be eaxct with our changes and to verify the changes.
 
 ### CLI Input
 The script accepts the following input parameters:
 
-- --backbone-file: Required. The path to the GenBank file of the plasmid backbone to modify.
-- --target-dir: Required. The path to the directory containing the list of target genes to replace. The target genes should be in FASTA format.
-- --replacement-dir: Required. The path to the directory containing the list of replacement genes to use. The replacement genes should be in FASTA format.
-- --crispr-file: Required. The path to the GenBank file containing the CRISPR target sequence and PAM.
-- --output-file: Required. The path to the output GenBank file with the modified plasmid.
+- --backbone-file: Required. The path to the GenBank file of the plasmid backbone to build from.
+- --target-dir: Required. The path to the directory containing the list of target genes to replace.
+- --replacement-dir: Required. The path to the directory containing the list of replacement genes to use.
+- --crispr-file: Required. The path to the GenBank file containing the desired multiplexed-CRISPR variant.
+- --output-file: Required. The path to the final plasmid.
 
 
 ### Example Usage
