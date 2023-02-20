@@ -5,37 +5,51 @@ import typer
 
 app = typer.Typer()
 
+def load_gene(filename):
+    """
+    Load the input file as a Biopython SeqRecord object
+    """
+    file_ext = os.path.splitext(filename)[1].lower()
+    if file_ext == ".gb" or file_ext == ".gbk" or file_ext == ".genbank":
+        seq_record = SeqIO.read(filename, "genbank")
+    elif file_ext == ".fa" or file_ext == ".fasta":
+        seq_record = SeqIO.read(filename, "fasta")
+    else:
+        raise ValueError(f"Unsupported file format: {file_ext}")
+
+    return seq_record
+
 @app.command()
 def modify_plasmid(
-    backbone_file: str = typer.Option(..., "--backbone-file", "-b", help="Path to the GenBank file of the plasmid backbone to modify."),
-    target_dir: str = typer.Option(..., "--target-dir", "-t", help="Path to the directory containing the list of target genes to replace. The target genes should be in FASTA format."),
-    replacement_dir: str = typer.Option(..., "--replacement-dir", "-r", help="Path to the directory containing the list of replacement genes to use. The replacement genes should be in FASTA format."),
-    crispr_file: str = typer.Option(..., "--crispr-file", "-c", help="Path to the GenBank file containing the CRISPR target sequence and PAM."),
-    output_file: str = typer.Option(..., "--output-file", "-o", help="Path to the output GenBank file with the modified plasmid.")
+    backbone_file: str = typer.Option(..., "--backbone-file", "-b", help="The path to the GenBank file of the plasmid backbone to build from."),
+    target_dir: str = typer.Option(..., "--target-dir", "-t", help="The path to the directory containing the list of target genes to replace."),
+    replacement_dir: str = typer.Option(..., "--replacement-dir", "-r", help="The path to the directory containing the list of replacement genes to use."),
+    crispr_file: str = typer.Option(..., "--crispr-file", "-c", help="The path to the GenBank file containing the desired multiplexed-CRISPR variant."),
+    output_file: str = typer.Option(..., "--output-file", "-o", help="The path to the resulting plasmid.")
 ):
     """
     Modify a GenBank file of a plasmid backbone by replacing specified target genes with new sequences.
 
     Parameters:
-        backbone_file (str): Path to the GenBank file of the plasmid backbone to modify.
-        target_dir (str): Path to the directory containing the list of target genes to replace. The target genes should be in FASTA format.
-        replacement_dir (str): Path to the directory containing the list of replacement genes to use. The replacement genes should be in FASTA format.
-        crispr_file (str): Path to the GenBank file containing the CRISPR target sequence and PAM.
-        output_file (str): Path to the output GenBank file with the modified plasmid.
+        backbone_file (str): The path to the GenBank file of the plasmid backbone to build from.
+        target_dir (str): The path to the directory containing the list of target genes to replace.
+        replacement_dir (str): The path to the directory containing the list of replacement genes to use.
+        crispr_file (str): The path to the GenBank file containing the desired multiplexed-CRISPR variant.
+        output_file (str): The path to the resulting plasmid.
     """
     # Parse the CRISPR GenBank file to get the target sequence and PAM
-    crispr_record = SeqIO.read(crispr_file, "genbank")
+    crispr_record = load_gene(crispr_file)
     target_sequence = crispr_record.features[0].qualifiers["target"][0]
     pam_sequence = crispr_record.features[0].qualifiers["PAM"][0]
 
     # Parse the GenBank file of the plasmid backbone
-    backbone_record = SeqIO.read(backbone_file, "genbank")
+    backbone_record = load_gene(backbone_file)
     
     # Loop through each target gene and its replacement
     for target_file, replacement_file in zip(os.listdir(target_dir), os.listdir(replacement_dir)):
         # Parse the target gene and its replacement
-        target_record = SeqIO.read(os.path.join(target_dir, target_file), "fasta")
-        replacement_record = SeqIO.read(os.path.join(replacement_dir, replacement_file), "fasta")
+        target_record = load_gene(os.path.join(target_dir, target_file))
+        replacement_record = load_gene(os.path.join(replacement_dir, replacement_file))
         
         # Find the location of the target gene in the plasmid backbone
         target_feature = None
