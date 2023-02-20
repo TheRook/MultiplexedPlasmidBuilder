@@ -14,9 +14,9 @@ The script accepts the following input parameters:
 ### Example Usage
 To use the script, navigate to the directory containing the script and run the following command:
 
-`python modify_plasmid.py modify_plasmid --backbone-file ./genes/backbone.gb --target-dir ./genes/targets/ --replacement-dir ./genes/replacements/ --crispr-file ./genes/crispr.gb --output-file plasmid_1.gb`
+`python3 main.py --backbone-file ./genes/backbone.gb --target-dir ./genes/targets/ --replacement-dir ./genes/replacements/ --crispr-file ./genes/crispr.gb --output-file plasmid_1.gb`
 
-This command will modify the plasmid GenBank file located at /path/to/backbone.gb by replacing the target genes located in /path/to/targets/ with the replacement genes located in /path/to/replacements/, using the CRISPR target sequence and PAM located in /path/to/crispr.gb, and write the modified plasmid to the file located at /path/to/output.gb.
+This command assumes CRISPR is being used for a 1:1 replacment of a list of genes. To do this the code above will modify the plasmid GenBank file located at genes/backbone.gb and will add pair the replacements with targets based off of the alphabetical sort order of both directories.
 
 ### Reproduceablity / Flexablity
 Commands can be saved within a .sh file and re-run to re-build a specific plasmid when needed. A team should be able to build any number of therapies or tests out of the same directory.  The code will take in fasta or genebank files.
